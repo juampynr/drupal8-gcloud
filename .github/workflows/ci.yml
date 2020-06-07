@@ -28,7 +28,9 @@ jobs:
           export_default_credentials: true
 
       - name: Check gcloud credentials
-        run: gcloud info
+        run: |
+          gcloud container clusters get-credentials ${{ secrets.GCP_CLUSTER_ID }} --zone us-central1-a --project ${{ secrets.GCP_PROJECT_ID }}
+          kubectl config get-contexts
 
       - name: Deploy to Google Cloud
         run: |
