@@ -20,7 +20,7 @@ metadata:
     app: drupal
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 20Gi
@@ -36,8 +36,12 @@ spec:
     matchLabels:
       app: drupal
       tier: frontend
+  replicas: 3
   strategy:
-    type: Recreate
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   template:
     metadata:
       labels:
@@ -60,10 +64,7 @@ spec:
             - name: DB_USER
               value: drupal
             - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: mysql
-                  key: nonadmin-password
+              value: <DB_PASSWORD>
           ports:
           - containerPort: 80
             name: drupal

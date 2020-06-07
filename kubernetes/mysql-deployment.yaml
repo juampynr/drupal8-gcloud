@@ -20,7 +20,7 @@ metadata:
     app: drupal
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 20Gi
@@ -49,19 +49,13 @@ spec:
         name: mysql
         env:
         - name: MYSQL_ROOT_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mysql
-              key: admin-password
+          value: <DB_ROOT_PASSWORD>
         - name: MYSQL_DATABASE
           value: drupal
         - name: MYSQL_USER
           value: drupal
         - name: MYSQL_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mysql
-              key: nonadmin-password
+          value: <DB_PASSWORD>
         ports:
         - containerPort: 3306
           name: mysql
