@@ -15,9 +15,9 @@ jobs:
         run: |
           TAG=$(echo -n $GITHUB_SHA | tail -c 3)
           echo ${{ secrets.PACKAGES_TOKEN }} | docker login docker.pkg.github.com -u juampynr --password-stdin
-          docker build --tag docker.pkg.github.com/juampynr/drupal8-gcloud/app:${TAG} .
-          docker push docker.pkg.github.com/juampynr/drupal8-gcloud/app:${TAG}
-          docker pull docker.pkg.github.com/juampynr/drupal8-gcloud/app:${TAG}
+          docker build --tag docker.pkg.github.com/juampynr/drupal8-gcloud/drupal8-gcloud:${TAG} .
+          docker push docker.pkg.github.com/juampynr/drupal8-gcloud/drupal8-gcloud:${TAG}
+          docker pull docker.pkg.github.com/juampynr/drupal8-gcloud/drupal8-gcloud:${TAG}
 
       - name: Install gcloud
         uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
