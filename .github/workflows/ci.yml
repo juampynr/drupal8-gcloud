@@ -32,12 +32,12 @@ jobs:
 
       - name: Deploy to Google Cloud
         run: |
-          TAG=$(echo -n $GITHUB_SHA | tail -c 3) && sed -i 's|<IMAGE>|docker.pkg.github.com/juampynr/drupal8-gcloud/app:'${TAG}'|' $GITHUB_WORKSPACE/definitions/drupal-deployment.yaml
-          sed -i 's|<DRUPAL_CRON>|${{ secrets.DRUPAL_CRON }}|' $GITHUB_WORKSPACE/definitions/drupal-deployment.yaml
-          sed -i 's|<DB_PASSWORD>|${{ secrets.DB_PASSWORD }}|' $GITHUB_WORKSPACE/definitions/drupal-deployment.yaml
-          sed -i 's|<DB_PASSWORD>|${{ secrets.DB_PASSWORD }}|' $GITHUB_WORKSPACE/definitions/mysql-deployment.yaml
-          sed -i 's|<DB_ROOT_PASSWORD>|${{ secrets.DB_PASSWORD }}|' $GITHUB_WORKSPACE/definitions/mysql-deployment.yaml
-          kubectl apply -k definitions
+          TAG=$(echo -n $GITHUB_SHA | tail -c 3) && sed -i 's|<IMAGE>|docker.pkg.github.com/juampynr/drupal8-gcloud/app:'${TAG}'|' $GITHUB_WORKSPACE/kubernetes/drupal-deployment.yaml
+          sed -i 's|<DRUPAL_CRON>|${{ secrets.DRUPAL_CRON }}|' $GITHUB_WORKSPACE/kubernetes/drupal-deployment.yaml
+          sed -i 's|<DB_PASSWORD>|${{ secrets.DB_PASSWORD }}|' $GITHUB_WORKSPACE/kubernetes/drupal-deployment.yaml
+          sed -i 's|<DB_PASSWORD>|${{ secrets.DB_PASSWORD }}|' $GITHUB_WORKSPACE/kubernetes/mysql-deployment.yaml
+          sed -i 's|<DB_ROOT_PASSWORD>|${{ secrets.DB_PASSWORD }}|' $GITHUB_WORKSPACE/kubernetes/mysql-deployment.yaml
+          kubectl apply -k kubernetes
           kubectl rollout status deployment/drupal
 
       - name: Update database
