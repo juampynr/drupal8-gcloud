@@ -15,22 +15,28 @@ jobs:
         run: |
           TAG=$(echo -n $GITHUB_SHA | tail -c 3)
           echo ${{ secrets.PACKAGES_TOKEN }} | docker login docker.pkg.github.com -u juampynr --password-stdin
-          docker build --tag docker.pkg.github.com/juampynr/drupal8-do/app:${TAG} .
-          docker push docker.pkg.github.com/juampynr/drupal8-do/app:${TAG}
-          docker pull docker.pkg.github.com/juampynr/drupal8-do/app:${TAG}
+          docker build --tag docker.pkg.github.com/juampynr/drupal8-gcloud/app:${TAG} .
+          docker push docker.pkg.github.com/juampynr/drupal8-gcloud/app:${TAG}
+          docker pull docker.pkg.github.com/juampynr/drupal8-gcloud/app:${TAG}
 
-      - name: Install doctl
-        uses: digitalocean/action-doctl@v2
+      - name: Install gcloud
+        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+          version: '295.0.0'
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
 
-      - name: Save cluster configuration
-        run: doctl kubernetes cluster kubeconfig save drupster
+      - name: Check gcloud credentials
+        run: gcloud info
 
-      - name: Deploy to DigitalOcean
+      - name: Deploy to Google Cloud
         run: |
-          TAG=$(echo -n $GITHUB_SHA | tail -c 3) && sed -i 's|<IMAGE>|docker.pkg.github.com/juampynr/drupal8-do/app:'${TAG}'|' $GITHUB_WORKSPACE/definitions/drupal-deployment.yaml
+          TAG=$(echo -n $GITHUB_SHA | tail -c 3) && sed -i 's|<IMAGE>|docker.pkg.github.com/juampynr/drupal8-gcloud/app:'${TAG}'|' $GITHUB_WORKSPACE/definitions/drupal-deployment.yaml
           sed -i 's|<DRUPAL_CRON>|${{ secrets.DRUPAL_CRON }}|' $GITHUB_WORKSPACE/definitions/drupal-deployment.yaml
+          sed -i 's|<DB_PASSWORD>|${{ secrets.DB_PASSWORD }}|' $GITHUB_WORKSPACE/definitions/drupal-deployment.yaml
+          sed -i 's|<DB_PASSWORD>|${{ secrets.DB_PASSWORD }}|' $GITHUB_WORKSPACE/definitions/mysql-deployment.yaml
+          sed -i 's|<DB_ROOT_PASSWORD>|${{ secrets.DB_PASSWORD }}|' $GITHUB_WORKSPACE/definitions/mysql-deployment.yaml
           kubectl apply -k definitions
           kubectl rollout status deployment/drupal
 
