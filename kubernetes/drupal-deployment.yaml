@@ -1,0 +1,92 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: drupal
+  labels:
+    app: drupal
+spec:
+  ports:
+    - port: 80
+  selector:
+    app: drupal
+    tier: frontend
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: dr-pv-claim
+  labels:
+    app: drupal
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: drupal
+  labels:
+    app: drupal
+spec:
+  selector:
+    matchLabels:
+      app: drupal
+      tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: drupal
+        tier: frontend
+    spec:
+      volumes:
+        - name: drupal-persistent-storage
+          persistentVolumeClaim:
+            claimName: dr-pv-claim
+      containers:
+        - image: <IMAGE>
+          name: drupal
+          imagePullPolicy: Always
+          env:
+            - name: DB_HOST
+              value: drupal-mysql
+            - name: DB_NAME
+              value: drupal
+            - name: DB_USER
+              value: drupal
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql
+                  key: nonadmin-password
+          ports:
+          - containerPort: 80
+            name: drupal
+          volumeMounts:
+          - name: drupal-persistent-storage
+            mountPath: /var/www/html/web/sites/default/files
+      imagePullSecrets:
+        - name: regcred
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: drupal-cron
+spec:
+  schedule: "*/1 * * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: drupal-cron
+              image: byrnedo/alpine-curl:0.1.8
+              args:
+                -  <DRUPAL_CRON>
+          restartPolicy: OnFailure
