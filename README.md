@@ -4,4 +4,3 @@
 
 Sample project that builds and deploys code changes automatically to a Kubernetes Cluster
 hosted at Google Cloud.
-
