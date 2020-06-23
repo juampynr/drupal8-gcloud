@@ -1,4 +1,4 @@
-# Sample Drupal 8 hosted via Kubernetes at Google Cloud
+# Sample Drupal 8 site hosted via Kubernetes at Google Cloud
 
 ![Build and deploy](https://github.com/juampynr/drupal8-gcloud/workflows/Build%20and%20deploy/badge.svg)
 

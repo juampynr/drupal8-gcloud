@@ -34,7 +34,6 @@ jobs:
       - name: Deploy to Google Cloud
         run: |
           sed -i 's|<IMAGE>|docker.pkg.github.com/juampynr/drupal8-gcloud/drupal8-gcloud:'${GITHUB_SHA}'|' $GITHUB_WORKSPACE/kubernetes/drupal-deployment.yaml
-          sed -i 's|<DRUPAL_CRON>|${{ secrets.DRUPAL_CRON }}|' $GITHUB_WORKSPACE/kubernetes/drupal-deployment.yaml
           sed -i 's|<DB_PASSWORD>|${{ secrets.DB_PASSWORD }}|' $GITHUB_WORKSPACE/kubernetes/drupal-deployment.yaml
           sed -i 's|<DB_PASSWORD>|${{ secrets.DB_PASSWORD }}|' $GITHUB_WORKSPACE/kubernetes/mysql-deployment.yaml
           sed -i 's|<DB_ROOT_PASSWORD>|${{ secrets.DB_PASSWORD }}|' $GITHUB_WORKSPACE/kubernetes/mysql-deployment.yaml
