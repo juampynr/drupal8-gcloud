@@ -93,18 +93,18 @@ spec:
                 - name: CLUSTER_ID
                   valueFrom:
                     secretKeyRef:
-                    name: creds
-                    key: cluster_id
+                      name: creds
+                      key: cluster_id
                 - name: CLUSTER_ZONE
                   valueFrom:
                     secretKeyRef:
-                    name: creds
-                    key: cluster_zone
+                      name: creds
+                      key: cluster_zone
                 - name: PROJECT_ID
                   valueFrom:
                     secretKeyRef:
-                    name: creds
-                    key: project_id
+                      name: creds
+                      key: project_id
               command: ["/bin/sh","-c"]
               args:
                 - echo $GCLOUD_SA > gcloud_sa.json
