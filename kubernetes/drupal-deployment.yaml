@@ -36,7 +36,6 @@ spec:
     matchLabels:
       app: drupal
       tier: frontend
-  replicas: 3
   strategy:
     type: Recreate
   template:
