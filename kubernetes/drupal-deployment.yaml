@@ -89,7 +89,7 @@ spec:
                   valueFrom:
                     secretKeyRef:
                       name: creds
-                      key: key
+                      path: gcloud_sa.json
                 - name: CLUSTER_ID
                   valueFrom:
                     secretKeyRef:
@@ -107,5 +107,8 @@ spec:
                       key: project_id
               command: ["/bin/sh","-c"]
               args:
-                - echo $GCLOUD_SA > gcloud_sa.json; gcloud auth activate-service-account --key-file=./gcloud_sa.json; gcloud container clusters get-credentials $CLUSTER_ID --zone $CLUSTER_ZONE --project $PROJECT_ID; POD_NAME=$(kubectl get pods -l tier=frontend -o=jsonpath='{.items[0].metadata.name}'); kubectl exec $POD_NAME -c drupal -- vendor/bin/drush core:cron;
+                - gcloud auth activate-service-account --key-file=./gcloud_sa.json;
+                  gcloud container clusters get-credentials $CLUSTER_ID --zone $CLUSTER_ZONE --project $PROJECT_ID;
+                  POD_NAME=$(kubectl get pods -l tier=frontend -o=jsonpath='{.items[0].metadata.name}');
+                  kubectl exec $POD_NAME -c drupal -- vendor/bin/drush core:cron;
           restartPolicy: OnFailure
