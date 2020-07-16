@@ -96,10 +96,7 @@ spec:
                   mountPath: /var/secrets/google
               command: ["/bin/sh","-c"]
               args:
-                - gcloud auth activate-service-account --key-file=/var/secrets/google/key.json;
-                  gcloud container clusters get-credentials $CLUSTER_ID --zone $CLUSTER_ZONE --project $PROJECT_ID;
-                  POD_NAME=$(kubectl get pods -l tier=frontend -o=jsonpath='{.items[0].metadata.name}');
-                  kubectl exec $POD_NAME -c drupal -- vendor/bin/drush core:cron;
+                - sleep 6000;
           volumes:
             - name: google-cloud-key
               secret:
