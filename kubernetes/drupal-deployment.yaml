@@ -84,19 +84,15 @@ spec:
           containers:
             - name: drupal-cron
               image: juampynr/gcloud-cronjob:latest
-              env:
-                - name: CLUSTER_ID
-                  value: /var/secrets/google/cluster_id.txt
-                - name: CLUSTER_ZONE
-                  value: /var/secrets/google/cluster_zone.txt
-                - name: PROJECT_ID
-                  value: /var/secrets/google/project_id.txt
               volumeMounts:
                 - name: google-cloud-key
                   mountPath: /var/secrets/google
               command: ["/bin/sh","-c"]
               args:
-                - sleep 6000;
+                - gcloud auth activate-service-account --key-file=/var/secrets/google/key.json;
+                  gcloud container clusters get-credentials `cat /var/secrets/google/cluster_id` --zone=`cat /var/secrets/google/cluster_zone` --project=`cat /var/secrets/google/project_id`;
+                  POD_NAME=$(kubectl get pods -l tier=frontend -o=jsonpath='{.items[0].metadata.name}');
+                  kubectl exec $POD_NAME -c drupal -- vendor/bin/drush core:cron;
           volumes:
             - name: google-cloud-key
               secret:
