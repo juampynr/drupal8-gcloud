@@ -75,7 +75,7 @@ kind: CronJob
 metadata:
   name: drupal-cron
 spec:
-  schedule: "*/5 * * * *"
+  schedule: "*/2 * * * *"
   concurrencyPolicy: Forbid
   jobTemplate:
     spec:
