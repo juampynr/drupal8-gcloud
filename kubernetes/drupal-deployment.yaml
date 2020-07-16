@@ -107,6 +107,5 @@ spec:
                       key: project_id
               command: ["/bin/sh","-c"]
               args:
-                - echo $GCLOUD_SA > gcloud_sa.json
                 - sleep 6000
           restartPolicy: OnFailure
