@@ -85,30 +85,23 @@ spec:
             - name: drupal-cron
               image: juampynr/gcloud-cronjob:latest
               env:
-                - name: GCLOUD_SA
-                  valueFrom:
-                    secretKeyRef:
-                      name: creds
-                      path: gcloud_sa.json
                 - name: CLUSTER_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: creds
-                      key: cluster_id
+                  value: /var/secrets/google/cluster_id
                 - name: CLUSTER_ZONE
-                  valueFrom:
-                    secretKeyRef:
-                      name: creds
-                      key: cluster_zone
+                  value: /var/secrets/google/cluster_zone
                 - name: PROJECT_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: creds
-                      key: project_id
+                  value: /var/secrets/google/project_id
+              volumeMounts:
+                - name: google-cloud-key
+                  mountPath: /var/secrets/google
               command: ["/bin/sh","-c"]
               args:
-                - gcloud auth activate-service-account --key-file=./gcloud_sa.json;
+                - gcloud auth activate-service-account --key-file=/var/secrets/google/key;
                   gcloud container clusters get-credentials $CLUSTER_ID --zone $CLUSTER_ZONE --project $PROJECT_ID;
                   POD_NAME=$(kubectl get pods -l tier=frontend -o=jsonpath='{.items[0].metadata.name}');
                   kubectl exec $POD_NAME -c drupal -- vendor/bin/drush core:cron;
+          volumes:
+            - name: google-cloud-key
+              secret:
+                secretName: creds
           restartPolicy: OnFailure
